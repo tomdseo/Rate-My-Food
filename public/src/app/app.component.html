@@ -1,0 +1,116 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<style>
+
+  .scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .flip-card {
+    background-color: transparent;
+    width: 200px;
+    height: 200px;
+    perspective: 1000px;
+  }
+
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.2s;
+    transform-style: preserve-3d;
+  }
+
+  .flip-card:hover .flip-card-inner {
+    transform: rotateZ(5deg);
+  }
+
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+  }
+
+</style>
+<body class="p-3">
+<div class="container">
+  <p class="display-3">Rate My Food</p>
+  <div class="row">
+    <div class="col-4">
+      <h3>Post Food to Be Rated</h3>
+      <form (submit)="onNewFood()">
+        <label class="mt-3">Restaurant</label>
+        <input type="text" name="newFood.name" [(ngModel)]="newFood.name" class="form-control"/>
+        <label class="mt-3">Image URL (landscape format)</label>
+        <input type="text" name="newFood.image" [(ngModel)]="newFood.image" class="form-control"/>
+        <input type="submit" value="Post" class="btn btn-primary mt-3"/>
+      </form>
+    </div>
+    <div class="col-8">
+      <div class="container" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden;">
+        <div *ngFor="let food of allFood">
+          <div class="card" style="max-height: 200px; min-width: 700px;">
+            <div class="row">
+              <div class="col-5 p-0">
+                <div class="flip-card">
+                  <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                      <img [src]="food.image" (click)="onShowFood(food)" style="width: 300px">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-7 pr-3 pl-0">
+                <form (submit)="onNewRating(food._id)">
+                  <select name="newRating.value" [(ngModel)]="newRating.value" class="form-control mt-3">
+                    <option value="" disabled selected>⭐⭐⭐⭐⭐</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                  </select>
+                  <textarea type="text" name="newRating.comment" [(ngModel)]="newRating.comment" class="form-control mt-3 scroll" placeholder="Type your comment here" style="overflow-y: scroll; resize: none;"></textarea>
+                  <input type="submit" value="Rate" class="btn btn-primary mt-3"/>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selectedFood.image != 'placeholder'" class="row">
+    <div class="col-6">
+      <div class="container" style="max-height: 500px;">
+        <h3>{{ selectedFood.name }}</h3>
+        <img [src]="selectedFood.image" style="width: 500px">
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="container pt-4">
+        <p class="display-4">Avg Rating: {{selectedFoodAvgRating }} Stars</p>
+        <div style="max-height: 240px; overflow-y: scroll; overflow-x: hidden;" class="scroll">
+          <div *ngFor="let rating of selectedFood.ratings">
+            <div class="card" style="max-height: 110px; min-width: 500px;">
+              <div class="card-body pb-3">
+                <blockquote class="blockquote">
+                  <p class="mb-0">{{ rating.comment }}</p>
+                  <footer class="blockquote-footer">{{ rating.value }} Stars</footer>
+                </blockquote>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
